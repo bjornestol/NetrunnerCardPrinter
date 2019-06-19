@@ -21,14 +21,18 @@ listOfCodes = []
 
 with open("cards.txt", 'r') as f:
     for line in f:
-        listOfCards.append(" ".join(line.split()[1:]))
+        s = line.split()
+        num = int(s[0])
+        name = " ".join(s[1:])
+        listOfCards.append((name, num))
 
-for name in listOfCards:
+for name, num in listOfCards:
     (img, code) = imgdict[name]
     response = requests.get(img, stream=True)
     with open("{}.png".format(code), 'wb') as f:
         shutil.copyfileobj(response.raw, f)
-    listOfCodes.append(code)
+    for i in range(num):
+        listOfCodes.append(code)
 
 
 
@@ -43,7 +47,7 @@ texdoc = """\documentclass[a4paper]{article}
 \\noindent
 """
 
-imgstr = "\hspace{{-1mm}}\n".join(3*["\includegraphics[height=89mm]{{{0}}}"]) + "\n"
+imgstr = "\includegraphics[height=89mm]{{{0}}}\hspace{{-1mm}}\n"
 
 for code in listOfCodes:
     texdoc += imgstr.format(code)
