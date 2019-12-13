@@ -1,0 +1,8 @@
+*.aux
+*.swp
+cards.txt
+*.log
+*.pdf
+*.pyc
+*.tex
+*~

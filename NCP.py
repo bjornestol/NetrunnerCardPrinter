@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import json, requests, shutil, os
+import json, requests, shutil, os, subprocess
 
 # Fetch NRDB api etc
 nrdburl = "https://netrunnerdb.com/api/2.0/public/cards"
@@ -29,7 +29,7 @@ with open("cards.txt", 'r') as f:
 for name, num in listOfCards:
     (img, code) = imgdict[name]
     response = requests.get(img, stream=True)
-    with open("{}.png".format(code), 'wb') as f:
+    with open("tmp/{}.png".format(code), 'wb') as f:
         shutil.copyfileobj(response.raw, f)
     for i in range(num):
         listOfCodes.append(code)
@@ -47,7 +47,7 @@ texdoc = """\documentclass[a4paper]{article}
 \\noindent
 """
 
-imgstr = "\includegraphics[height=89mm]{{{0}}}\hspace{{-1mm}}\n"
+imgstr = "\includegraphics[height=89mm]{{tmp/{0}}}\hspace{{-1mm}}\n"
 
 for code in listOfCodes:
     texdoc += imgstr.format(code)
@@ -57,4 +57,8 @@ texdoc += "\end{document}"
 with open("NCP.tex", "w+") as f:
     f.write(texdoc)
 
-os.system("pdflatex NCP.tex")
+process = subprocess.Popen(["pdflatex", "NCP.tex"])
+process.communicate()
+
+for filename in os.listdir("tmp"):
+    os.unlink("tmp/"+filename)
